@@ -37,13 +37,17 @@ To get started with Annuncio, follow these steps:
     ```
 
 ## 💻 Usage
-To run the application with streamlit, execute the following command:
+To run the application locally with streamlit, execute the following command:
 
 ```bash
 streamlit run app.py
 ```
 
 The application will start on http://localhost:8503/.
+
+To run the application with stramlit cloud:
+
+link: https://annuncio-hackathon-aria-allegro-qcrkkman2wu28bl7cqtnqe.streamlit.app/
 
 ## 🎉 Contributing
 We welcome contributions! Feel free to open issues, submit pull requests, and provide feedback.
