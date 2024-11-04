@@ -38,7 +38,7 @@ def create_text_overlay(frame: np.ndarray, text: str, alpha: float = 1.0) -> np.
 
     # Set text properties
     font = cv2.FONT_HERSHEY_DUPLEX
-    font_scale = min(width, height) / 500  # Scale font based on frame size
+    font_scale = min(width, height) / 250  # Scale font based on frame size
     thickness = max(4, int(font_scale * 3))
 
     # Get text size
@@ -118,7 +118,7 @@ def add_text_overlay(video_url: str, product_name: str) -> Optional[str]:
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
         # Create video writer
-        fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+        fourcc = cv2.VideoWriter_fourcc(*"H264")
         out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
         # Process each frame
@@ -154,33 +154,33 @@ def add_text_overlay(video_url: str, product_name: str) -> Optional[str]:
         cap.release()
         out.release()
 
-        # Copy audio from original to new video
-        print("Adding audio...")
-        try:
-            # Load original video with MoviePy to get audio
-            original_video = VideoFileClip(input_path)
-            # Load the new video we created
-            new_video = VideoFileClip(output_path)
+        # # Copy audio from original to new video
+        # print("Adding audio...")
+        # try:
+        #     # Load original video with MoviePy to get audio
+        #     original_video = VideoFileClip(input_path)
+        #     # Load the new video we created
+        #     new_video = VideoFileClip(output_path)
 
-            if original_video.audio is not None:
-                # Create final video with original audio
-                final_output = os.path.abspath(
-                    os.path.join(temp_dir, "final_output.mp4")
-                )
-                new_video.set_audio(original_video.audio).write_videofile(
-                    final_output, codec="libx264", audio_codec="aac"
-                )
-                # Clean up
-                original_video.close()
-                new_video.close()
-                # Use the final output as our result
-                output_path = final_output
-            else:
-                print("Original video has no audio track")
+        #     if original_video.audio is not None:
+        #         # Create final video with original audio
+        #         final_output = os.path.abspath(
+        #             os.path.join(temp_dir, "final_output.mp4")
+        #         )
+        #         new_video.set_audio(original_video.audio).write_videofile(
+        #             final_output, codec="libx264", audio_codec="aac"
+        #         )
+        #         # Clean up
+        #         original_video.close()
+        #         new_video.close()
+        #         # Use the final output as our result
+        #         output_path = final_output
+        # else:
+        #     print("Original video has no audio track")
 
-        except Exception as e:
-            print(f"Error processing audio: {str(e)}")
-            print("Continuing with video-only output")
+        # except Exception as e:
+        #     print(f"Error processing audio: {str(e)}")
+        #     print("Continuing with video-only output")
 
         print("Processing complete!")
         return output_path
@@ -191,13 +191,7 @@ def add_text_overlay(video_url: str, product_name: str) -> Optional[str]:
 
     finally:
         # Clean up temporary directory
-        try:
-            import shutil
-
-            if os.path.exists(temp_dir):
-                shutil.rmtree(temp_dir)
-        except Exception as e:
-            print(f"Error cleaning up temporary directory: {str(e)}")
+        pass
 
 
 # Example usage:
