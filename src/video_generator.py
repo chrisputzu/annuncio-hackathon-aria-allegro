@@ -71,10 +71,10 @@ class VideoGenerator:
             dict: The response from the API with the current status of the video generation
                   or an error message in case of failure.
         """
-        return {
-            "data": "https://apiplatform-rhymes-prod-va.s3.amazonaws.com/20241104184528.mp4"
-        }
-        time.sleep(240)
+        # return {
+        #     "data": "https://apiplatform-rhymes-prod-va.s3.amazonaws.com/20241104184528.mp4"
+        # }
+        time.sleep(120)
         url = f"{self.api_url}/videoQuery"
         headers = {"Authorization": f"Bearer {self.bearer_token}"}
         params = {"requestId": request_id}
