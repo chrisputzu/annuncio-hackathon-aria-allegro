@@ -46,7 +46,7 @@ def create_text_overlay(
     product_thickness = max(4, int(product_font_scale * 3))
 
     # Set text properties for tagline (smaller size)
-    tagline_font_scale = product_font_scale * 0.3  # Tagline is 60% of product name size
+    tagline_font_scale = product_font_scale * 0.4  # Tagline is 60% of product name size
     tagline_thickness = max(2, int(tagline_font_scale * 2))
 
     # Get text sizes
@@ -149,7 +149,7 @@ def add_text_overlay(video_url: str, product_name: str, tagline: str) -> Optiona
 
         # Use absolute paths for all files
         input_path = os.path.abspath(os.path.join(temp_dir, "input.mp4"))
-        output_path = os.path.abspath(os.path.join(temp_dir, "output.mp4"))
+        output_path = os.path.abspath(os.path.join(temp_dir, "output.webM"))
 
         # Download video
         print("Downloading video...")
@@ -165,7 +165,7 @@ def add_text_overlay(video_url: str, product_name: str, tagline: str) -> Optiona
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
         # Create video writer
-        fourcc = cv2.VideoWriter_fourcc(*"H264")
+        fourcc = cv2.VideoWriter_fourcc("V", "P", "8", "0")
         out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
         # Process each frame
