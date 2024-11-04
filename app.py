@@ -13,6 +13,11 @@ def display_content_section(title: str, content, type="text"):
     st.write(f"**{title}:**")
     if isinstance(content, list):
         for item in content:
+            item = item.replace("<|im_end|>", "")
+            item = item.replace("[Response]", "")
+            item = item.strip()
+            if not item or len(item) == 0 or item.startswith("Note:"):
+                continue
             st.write(f"• {item}".replace("<|im_end|>", ""))
     elif type == "code":
         st.code(content)
@@ -147,7 +152,7 @@ def main():
                     request_id = video_response.get("data")
 
                     # Poll for video completion
-                    max_attempts = 60
+                    max_attempts = 120
                     attempts = 0
                     video_link = None
 
@@ -158,10 +163,16 @@ def main():
                         if video_link:
                             print(video_link)
                             video_placeholder.info("🎨 Adding text overlay to video...")
-
+                            vid_tagline = taglines[0].strip()
+                            if vid_tagline.startswith("1"):
+                                vid_tagline = vid_tagline[1:].strip()
+                            if vid_tagline.startswith('"'):
+                                vid_tagline = vid_tagline[1:].strip()
+                            if vid_tagline.endswith('"'):
+                                vid_tagline = vid_tagline[:-1].strip()
                             # Add text overlay to video
                             final_video_path = add_text_overlay(
-                                video_link, product_name
+                                video_link, product_name, vid_tagline
                             )
                             print("Final Video Path:", final_video_path)
                             if final_video_path:

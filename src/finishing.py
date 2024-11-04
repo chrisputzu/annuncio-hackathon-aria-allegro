@@ -18,13 +18,16 @@ def download_video(url: str, output_path: str) -> None:
             f.write(chunk)
 
 
-def create_text_overlay(frame: np.ndarray, text: str, alpha: float = 1.0) -> np.ndarray:
+def create_text_overlay(
+    frame: np.ndarray, product_name: str, tagline: str, alpha: float = 1.0
+) -> np.ndarray:
     """
-    Create text overlay on a single frame
+    Create text overlay on a single frame with product name and tagline
 
     Args:
         frame: Input video frame
-        text: Text to overlay
+        product_name: Main text to overlay
+        tagline: Secondary text to display below product name
         alpha: Opacity of text (0.0 to 1.0)
 
     Returns:
@@ -36,43 +39,85 @@ def create_text_overlay(frame: np.ndarray, text: str, alpha: float = 1.0) -> np.
     # Get frame dimensions
     height, width = frame.shape[:2]
 
-    # Set text properties
+    # Set text properties for product name
     font = cv2.FONT_HERSHEY_DUPLEX
-    font_scale = min(width, height) / 250  # Scale font based on frame size
-    thickness = max(4, int(font_scale * 3))
+    product_font_scale = min(width, height) / 180  # Scale font based on frame size
+    product_thickness = max(4, int(product_font_scale * 3))
 
-    # Get text size
-    (text_width, text_height), baseline = cv2.getTextSize(
-        text, font, font_scale, thickness
+    # Set text properties for tagline (smaller size)
+    tagline_font_scale = product_font_scale * 0.3  # Tagline is 60% of product name size
+    tagline_thickness = max(2, int(tagline_font_scale * 2))
+
+    # Get text sizes
+    (product_width, product_height), product_baseline = cv2.getTextSize(
+        product_name, font, product_font_scale, product_thickness
+    )
+    (tagline_width, tagline_height), tagline_baseline = cv2.getTextSize(
+        tagline, font, tagline_font_scale, tagline_thickness
     )
 
-    # Calculate text position (center)
-    text_x = (width - text_width) // 2
-    text_y = (height + text_height) // 2
+    # Calculate vertical spacing between product name and tagline
+    spacing = int(product_height * 0.5)  # 50% of product text height
 
-    # Draw text shadow (outline)
+    # Calculate text positions (center horizontally, stack vertically)
+    product_x = (width - product_width) // 2
+    tagline_x = (width - tagline_width) // 2
+
+    # Position both texts vertically centered as a group
+    total_height = product_height + spacing + tagline_height
+    group_y = (height - total_height) // 2
+
+    product_y = group_y + product_height
+    tagline_y = product_y + spacing + tagline_height
+
+    # Draw product name shadow (outline)
     shadow_color = (0, 0, 0)
-    shadow_thickness = thickness + 2
+    shadow_thickness = product_thickness + 2
     cv2.putText(
         overlay,
-        text,
-        (text_x, text_y),
+        product_name,
+        (product_x, product_y),
         font,
-        font_scale,
+        product_font_scale,
         shadow_color,
         shadow_thickness,
         cv2.LINE_AA,
     )
 
-    # Draw main text
+    # Draw product name main text
     cv2.putText(
         overlay,
-        text,
-        (text_x, text_y),
+        product_name,
+        (product_x, product_y),
         font,
-        font_scale,
+        product_font_scale,
         (255, 255, 255),
-        thickness,
+        product_thickness,
+        cv2.LINE_AA,
+    )
+
+    # Draw tagline shadow (outline)
+    tagline_shadow_thickness = tagline_thickness + 2
+    cv2.putText(
+        overlay,
+        tagline,
+        (tagline_x, tagline_y),
+        font,
+        tagline_font_scale,
+        shadow_color,
+        tagline_shadow_thickness,
+        cv2.LINE_AA,
+    )
+
+    # Draw tagline main text
+    cv2.putText(
+        overlay,
+        tagline,
+        (tagline_x, tagline_y),
+        font,
+        tagline_font_scale,
+        (255, 255, 255),
+        tagline_thickness,
         cv2.LINE_AA,
     )
 
@@ -80,13 +125,14 @@ def create_text_overlay(frame: np.ndarray, text: str, alpha: float = 1.0) -> np.
     return cv2.addWeighted(overlay, alpha, frame, 1 - alpha, 0)
 
 
-def add_text_overlay(video_url: str, product_name: str) -> Optional[str]:
+def add_text_overlay(video_url: str, product_name: str, tagline: str) -> Optional[str]:
     """
     Add centered text overlay to video and return path to processed video
 
     Args:
         video_url: URL of the input video
-        product_name: Text to overlay on video
+        product_name: Main text to overlay
+        tagline: Secondary text to display below product name
 
     Returns:
         Path to processed video file or None if processing fails
@@ -140,7 +186,7 @@ def add_text_overlay(video_url: str, product_name: str) -> Optional[str]:
                 alpha = 1.0
 
             # Add text overlay
-            frame_with_text = create_text_overlay(frame, product_name, alpha)
+            frame_with_text = create_text_overlay(frame, product_name, tagline, alpha)
 
             # Write the frame
             out.write(frame_with_text)
@@ -153,34 +199,6 @@ def add_text_overlay(video_url: str, product_name: str) -> Optional[str]:
         # Release resources
         cap.release()
         out.release()
-
-        # # Copy audio from original to new video
-        # print("Adding audio...")
-        # try:
-        #     # Load original video with MoviePy to get audio
-        #     original_video = VideoFileClip(input_path)
-        #     # Load the new video we created
-        #     new_video = VideoFileClip(output_path)
-
-        #     if original_video.audio is not None:
-        #         # Create final video with original audio
-        #         final_output = os.path.abspath(
-        #             os.path.join(temp_dir, "final_output.mp4")
-        #         )
-        #         new_video.set_audio(original_video.audio).write_videofile(
-        #             final_output, codec="libx264", audio_codec="aac"
-        #         )
-        #         # Clean up
-        #         original_video.close()
-        #         new_video.close()
-        #         # Use the final output as our result
-        #         output_path = final_output
-        # else:
-        #     print("Original video has no audio track")
-
-        # except Exception as e:
-        #     print(f"Error processing audio: {str(e)}")
-        #     print("Continuing with video-only output")
 
         print("Processing complete!")
         return output_path
@@ -198,7 +216,8 @@ def add_text_overlay(video_url: str, product_name: str) -> Optional[str]:
 if __name__ == "__main__":
     video_url = "YOUR_VIDEO_URL"
     product_name = "Your Product Name"
-    output = add_text_overlay(video_url, product_name)
+    tagline = "Your Amazing Tagline"
+    output = add_text_overlay(video_url, product_name, tagline)
     if output:
         print(f"Video saved to: {output}")
     else:
