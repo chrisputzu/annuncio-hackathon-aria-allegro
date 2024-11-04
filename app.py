@@ -163,7 +163,7 @@ def main():
                             final_video_path = add_text_overlay(
                                 video_link, product_name
                             )
-
+                            print("Final Video Path:", final_video_path)
                             if final_video_path:
                                 video_placeholder.success(
                                     "✨ Video processing complete! Scroll to End"
