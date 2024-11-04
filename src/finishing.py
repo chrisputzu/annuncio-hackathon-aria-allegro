@@ -165,7 +165,7 @@ def add_text_overlay(video_url: str, product_name: str, tagline: str) -> Optiona
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
         # Create video writer
-        fourcc = cv2.VideoWriter_fourcc(*"avc1")
+        fourcc = cv2.VideoWriter_fourcc(*"H264")
         out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
         # Process each frame
