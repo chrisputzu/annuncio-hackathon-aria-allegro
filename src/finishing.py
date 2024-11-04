@@ -39,7 +39,7 @@ def create_text_overlay(frame: np.ndarray, text: str, alpha: float = 1.0) -> np.
     # Set text properties
     font = cv2.FONT_HERSHEY_DUPLEX
     font_scale = min(width, height) / 500  # Scale font based on frame size
-    thickness = max(2, int(font_scale * 2))
+    thickness = max(4, int(font_scale * 3))
 
     # Get text size
     (text_width, text_height), baseline = cv2.getTextSize(

@@ -37,7 +37,7 @@ def main():
 
     # Set up the Streamlit interface
     st.title("Annuncio")
-    st.subheader("Comprehensive Advertising Content Generator")
+    st.subheader("Let AI handle your Product Advertisement!")
 
     # Initialize session state for tracking steps if not exists
     if "step" not in st.session_state:
