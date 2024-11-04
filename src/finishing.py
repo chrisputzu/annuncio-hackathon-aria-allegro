@@ -16,6 +16,7 @@ def download_video(url: str, output_path: str) -> None:
     with open(output_path, "wb") as f:
         for chunk in response.iter_content(chunk_size=8192):
             f.write(chunk)
+    print("Downloaded", os.path.getsize(output_path), "bytes")
 
 
 def create_text_overlay(
